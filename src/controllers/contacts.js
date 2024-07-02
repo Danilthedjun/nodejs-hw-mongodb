@@ -20,6 +20,15 @@ export const getAllContactsController = async (req, res) => {
   const filter = parseFilterParams(query);
 
   try {
+    console.log('Request Query:', query);
+    console.log('Parsed Params:', {
+      page,
+      perPage,
+      sortBy,
+      sortOrder,
+      filter,
+    });
+
     const data = await getAllContacts({
       page,
       perPage,
@@ -27,6 +36,8 @@ export const getAllContactsController = async (req, res) => {
       sortOrder,
       filter,
     });
+
+    console.log('Response Data:', data);
 
     res.json({
       status: 200,
