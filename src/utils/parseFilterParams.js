@@ -10,14 +10,13 @@ const parseBoolean = (value) => {
   return parsedValue;
 };
 
-const parseFitlerParams = ({ type, isFavourite }) => {
-  const parsedType = contactTypeList.includes(type) ? type : null;
+const parseFilterParams = ({ contactType, isFavourite }) => {
+  const parsedType = contactTypeList.includes(contactType) ? contactType : null;
   const parsedFavorite = parseBoolean(isFavourite);
-
   return {
-    type: parsedType,
+    contactType: parsedType,
     isFavourite: parsedFavorite,
   };
 };
 
-export default parseFitlerParams;
+export default parseFilterParams;

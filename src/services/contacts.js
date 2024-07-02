@@ -1,50 +1,60 @@
 import { ContactsCollection } from '../db/models/contact.js';
-import calcPagnationData from '../utils/calcPaginationData.js';
+import calcPaginationData from '../utils/calcPaginationData.js';
 import list from '../constants/sort.js';
 import fieldList from '../constants/fieldList.js';
 
 export const getAllContacts = async ({
-  filter,
   page,
   perPage,
   sortBy = list[0],
   sortOrder = fieldList[0],
+  filter,
 }) => {
   const skip = (page - 1) * perPage;
 
-  const databaseQuery = ContactsCollection.find();
-  if (filter.type) {
-    databaseQuery.where('type').equals(filter.type);
+  let databaseQuery = ContactsCollection.find();
+  if (filter.contactType) {
+    databaseQuery = databaseQuery
+      .where('contactType')
+      .equals(filter.contactType);
   }
-  if (filter.favorite) {
-    databaseQuery.where('isFavourite').equals(filter.isFavourite);
+  if (filter.isFavourite) {
+    databaseQuery = databaseQuery
+      .where('isFavourite')
+      .equals(filter.isFavourite);
   }
 
-  const data = await databaseQuery
+  const items = await databaseQuery
     .skip(skip)
     .limit(perPage)
     .sort({ [sortBy]: sortOrder });
 
-  const totalItems = await ContactsCollection.find()
-    .merge(databaseQuery)
-    .countDocuments();
+  let countQuery = ContactsCollection.find();
+  if (filter.contactType) {
+    countQuery = countQuery.where('contactType').equals(filter.contactType);
+  }
+  if (filter.isFavourite) {
+    countQuery = countQuery.where('isFavourite').equals(filter.isFavourite);
+  }
 
-  const { totalPages, hasNextPage, hasPreviousPage } = calcPagnationData({
+  const totalItems = await countQuery.countDocuments();
+  const { totalPages, hasNextPage, hasPrevPage } = calcPaginationData({
     total: totalItems,
-    page,
     perPage,
+    page,
   });
 
   return {
-    data,
+    items,
+    totalItems,
     page,
     perPage,
-    totalItems,
     totalPages,
-    hasPreviousPage,
     hasNextPage,
+    hasPrevPage,
   };
 };
+
 export const getContactById = (contactId) =>
   ContactsCollection.findById(contactId);
 

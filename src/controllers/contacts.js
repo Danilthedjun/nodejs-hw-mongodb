@@ -11,27 +11,34 @@ import createHttpError from 'http-errors';
 import parsePaginationParams from '../utils/parsePaginationParams.js';
 import parseSortParams from '../utils/parseSortParams.js';
 import fieldList from '../constants/fieldList.js';
-import parseFitlerParams from '../utils/parseFilterParams.js';
+import parseFilterParams from '../utils/parseFilterParams.js';
 
 export const getAllContactsController = async (req, res) => {
   const { query } = req;
   const { page, perPage } = parsePaginationParams(query);
   const { sortBy, sortOrder } = parseSortParams(query, fieldList);
-  const filter = parseFitlerParams(query);
+  const filter = parseFilterParams(query);
 
-  const data = await getAllContacts({
-    page,
-    perPage,
-    sortBy,
-    sortOrder,
-    filter,
-  });
+  try {
+    const data = await getAllContacts({
+      page,
+      perPage,
+      sortBy,
+      sortOrder,
+      filter,
+    });
 
-  res.json({
-    status: 200,
-    message: 'Successfully found contacts!',
-    data,
-  });
+    res.json({
+      status: 200,
+      message: 'Successfully found contacts!',
+      data,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 500,
+      message: error.message,
+    });
+  }
 };
 
 export const getContactByIdController = async (req, res) => {
