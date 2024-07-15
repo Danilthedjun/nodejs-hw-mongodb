@@ -6,12 +6,16 @@ import {
   deleteContact,
 } from '../services/contacts.js';
 
+import fieldList from '../constants/fieldList.js';
+
 import createHttpError from 'http-errors';
+import { env } from '../utils/env.js';
 
 import parsePaginationParams from '../utils/parsePaginationParams.js';
 import parseSortParams from '../utils/parseSortParams.js';
-import fieldList from '../constants/fieldList.js';
+import saveFile2Public from '../utils/SaveFile2Public.js';
 import parseFilterParams from '../utils/parseFilterParams.js';
+import saveFile2Cloud from '../utils/SaveFile2Cloud.js';
 
 export const getAllContactsController = async (req, res) => {
   const { _id: userId } = req.user;
@@ -57,8 +61,20 @@ export const getContactByIdController = async (req, res) => {
 };
 
 export const addContactController = async (req, res) => {
+  const enable_cloudinary = env('ENABLE_CLOUDINARY');
   const { _id: userId } = req.user;
-  const data = await addContact({ ...req.body, userId });
+  let image = '';
+
+  if (req.file) {
+    if (enable_cloudinary === 'true') {
+      image = await saveFile2Cloud(req.file, 'img');
+    } else {
+      image = await saveFile2Public(req.file);
+    }
+  }
+
+  const data = await addContact({ ...req.body, userId, image });
+
   res.status(201).json({
     status: 201,
     message: 'Successfully created a contact!',
@@ -67,9 +83,24 @@ export const addContactController = async (req, res) => {
 };
 
 export const updateContactController = async (req, res) => {
+  const enable_cloudinary = env('ENABLE_CLOUDINARY');
   const { contactId } = req.params;
   const { _id: userId } = req.user;
-  const data = await updateContact({ _id: contactId, userId }, req.body);
+  let image = '';
+
+  if (req.file) {
+    if (enable_cloudinary === 'true') {
+      image = await saveFile2Cloud(req.file, 'img');
+    } else {
+      image = await saveFile2Public(req.file);
+    }
+  }
+  const updateData = { ...req.body, userId };
+  if (image) {
+    updateData.image = image;
+  }
+
+  const data = await updateContact(contactId, updateData);
 
   if (!data) {
     throw createHttpError(404, { message: 'Contact not found' });
