@@ -63,17 +63,17 @@ export const getContactByIdController = async (req, res) => {
 export const addContactController = async (req, res) => {
   const enable_cloudinary = env('ENABLE_CLOUDINARY');
   const { _id: userId } = req.user;
-  let image = '';
+  let photo = '';
 
   if (req.file) {
     if (enable_cloudinary === 'true') {
-      image = await saveFile2Cloud(req.file, 'img');
+      photo = await saveFile2Cloud(req.file, 'img');
     } else {
-      image = await saveFile2Public(req.file);
+      photo = await saveFile2Public(req.file);
     }
   }
 
-  const data = await addContact({ ...req.body, userId, image });
+  const data = await addContact({ ...req.body, userId, photo });
 
   res.status(201).json({
     status: 201,
@@ -86,18 +86,18 @@ export const updateContactController = async (req, res) => {
   const enable_cloudinary = env('ENABLE_CLOUDINARY');
   const { contactId } = req.params;
   const { _id: userId } = req.user;
-  let image = '';
+  let photo = '';
 
   if (req.file) {
     if (enable_cloudinary === 'true') {
-      image = await saveFile2Cloud(req.file, 'img');
+      photo = await saveFile2Cloud(req.file, 'img');
     } else {
-      image = await saveFile2Public(req.file);
+      photo = await saveFile2Public(req.file);
     }
   }
   const updateData = { ...req.body, userId };
-  if (image) {
-    updateData.image = image;
+  if (photo) {
+    updateData.image = photo;
   }
 
   const data = await updateContact(contactId, updateData);

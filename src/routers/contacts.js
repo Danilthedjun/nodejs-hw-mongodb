@@ -29,14 +29,14 @@ contactsRouter.get(
 );
 contactsRouter.post(
   '/',
-  upload.single('image'),
+  upload.single('photo'),
   validateBody(contactAddSchema),
   ctrlWrapper(addContactController),
 );
 
 contactsRouter.patch(
   '/:contactId',
-  upload.single('image'),
+  upload.single('photo'),
   validateBody(contactUpdateSchema),
   isValidId,
   ctrlWrapper(updateContactController),

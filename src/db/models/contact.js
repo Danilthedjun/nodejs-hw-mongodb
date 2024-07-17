@@ -25,7 +25,7 @@ const contactSchema = new Schema(
       enum: contactTypeList,
       default: 'personal',
     },
-    image: {
+    photo: {
       type: String,
     },
     userId: {
