@@ -97,7 +97,7 @@ export const updateContactController = async (req, res) => {
   }
   const updateData = { ...req.body, userId };
   if (photo) {
-    updateData.image = photo;
+    updateData.photo = photo;
   }
 
   const data = await updateContact(contactId, updateData);
