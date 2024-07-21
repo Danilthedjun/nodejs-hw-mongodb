@@ -1,0 +1,19 @@
+tags:
+  - Auth
+summary: Send a password reset email
+operationId: sendResetEmail
+security:
+  - {}
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ..\..\..\components\schemas\RequestResetEmail.yaml
+responses:
+  '200':
+    description: Reset email sent successfully
+  '400':
+    description: Invalid input
+  '500':
+    description: Server error
